@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}Features | {% endblock %}
+
+{% block content %}
+<div class="p-10 lg:p-20">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl lg:text-5xl text-white mb-8">Features</h1>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-gray-800 p-6 rounded-xl">
+                <h3 class="text-xl text-white mb-2">Real-time Messaging</h3>
+                <ul class="text-gray-300 space-y-2">
+                    <li>✨ Instant message delivery</li>
+                    <li>✨ Message status indicators</li>
+                    <li>✨ Typing indicators</li>
+                    <li>✨ Emoji support</li>
+                </ul>
+            </div>
+
+            <div class="bg-gray-800 p-6 rounded-xl">
+                <h3 class="text-xl text-white mb-2">Chat Rooms</h3>
+                <ul class="text-gray-300 space-y-2">
+                    <li>✨ Multiple topic-based rooms</li>
+                    <li>✨ Room member list</li>
+                    <li>✨ Active users indicator</li>
+                    <li>✨ Room creation (coming soon)</li>
+                </ul>
+            </div>
+
+            <div class="bg-gray-800 p-6 rounded-xl">
+                <h3 class="text-xl text-white mb-2">User Features</h3>
+                <ul class="text-gray-300 space-y-2">
+                    <li>✨ Custom profiles</li>
+                    <li>✨ Online status</li>
+                    <li>✨ Message history</li>
+                    <li>✨ User preferences</li>
+                </ul>
+            </div>
+
+            <div class="bg-gray-800 p-6 rounded-xl">
+                <h3 class="text-xl text-white mb-2">Security</h3>
+                <ul class="text-gray-300 space-y-2">
+                    <li>✨ Secure authentication</li>
+                    <li>✨ Message encryption</li>
+                    <li>✨ Privacy controls</li>
+                    <li>✨ Safe user experience</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

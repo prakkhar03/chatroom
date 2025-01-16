@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login as auth_login,logout
 from .models import chatuser
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 def frontpage(request):
     return render(request, 'frontpage.html')
@@ -44,3 +45,17 @@ def login(request):
 def logoutfromchat(request):
     logout(request)
     return redirect('frontpage')
+def about(request):
+    return render(request, 'about.html')
+def features(request):
+    return render(request, 'features.html')
+def contact(request):
+    return render(request, 'contact.html')
+@login_required
+def home(request):
+    try:
+        user = request.user
+        chat_user = chatuser.objects.get(user=user)
+        return render(request, 'home.html')
+    except Exception as e:
+        return redirect('login')
