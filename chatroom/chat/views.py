@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login as auth_login
+from django.contrib.auth import authenticate, login as auth_login,logout
 from .models import chatuser
 from django.contrib import messages
 
@@ -14,7 +14,7 @@ def signup(request):
         password2 = request.POST.get('password2')
         
         if password1 != password2:
-            messages.error(request, "Passwords don't match!")
+            messages.error(request, "Passwords didn't match!")
             return redirect('signup')
         
         try:
@@ -41,3 +41,6 @@ def login(request):
             return redirect('login')
             
     return render(request, 'login.html')
+def logoutfromchat(request):
+    logout(request)
+    return redirect('frontpage')
