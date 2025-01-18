@@ -8,6 +8,7 @@ urlpatterns = [
     path("about/", about, name='about'),
     path("features/", features, name='features'),
     path("contact/", contact, name='contact'),
-    path("home/", home, name='home'),
     path("logout/",  logoutfromchat, name='logout'),
+    path("rooms/", rooms, name='rooms'),
+    path("<slug:slug>",room,name="room")
 ]

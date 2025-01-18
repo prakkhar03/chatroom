@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login as auth_login,logout
-from .models import chatuser
+from .models import *
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
@@ -20,7 +20,6 @@ def signup(request):
         
         try:
             user = User.objects.create_user(username=username, password=password1)
-            chat_user = chatuser.objects.create(user=user)
             return redirect('login')
         except Exception as e:
             messages.error(request, "Username already exists or invalid input!")
@@ -36,7 +35,7 @@ def login(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             auth_login(request, user)
-            return redirect('home')
+            return redirect('rooms')
         else:
             messages.error(request, "Invalid username or password!")
             return redirect('login')
@@ -51,11 +50,12 @@ def features(request):
     return render(request, 'features.html')
 def contact(request):
     return render(request, 'contact.html')
+
 @login_required
-def home(request):
-    try:
-        user = request.user
-        chat_user = chatuser.objects.get(user=user)
-        return render(request, 'home.html')
-    except Exception as e:
-        return redirect('login')
+def rooms(request):
+    rooms = Room.objects.all().order_by('name')
+    return render(request, 'rooms.html', {'rooms': rooms})
+@login_required
+def room(request,slug):
+    room = Room.objects.get(slug=slug)
+    return render(request, 'room.html', {'room': room})
