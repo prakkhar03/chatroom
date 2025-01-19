@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 
 class ChatUser(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    email = models.EmailField(default=None)
     
     def __str__(self):
         return self.user.username

@@ -11,6 +11,7 @@ def frontpage(request):
 def signup(request):
     if request.method == 'POST':
         username = request.POST.get('username')
+        email = request.POST.get('email')
         password1 = request.POST.get('password1')
         password2 = request.POST.get('password2')
         
@@ -19,7 +20,7 @@ def signup(request):
             return redirect('signup')
         
         try:
-            user = User.objects.create_user(username=username, password=password1)
+            user = User.objects.create_user(username=username,email=email, password=password1)
             return redirect('login')
         except Exception as e:
             messages.error(request, "Username already exists or invalid input!")
@@ -59,3 +60,29 @@ def rooms(request):
 def room(request,slug):
     room = Room.objects.get(slug=slug)
     return render(request, 'room.html', {'room': room})
+@login_required
+def profile(request):
+    user = request.user
+    return render(request, 'profile.html', {'user': user})
+def changepassword(request):
+    if request.method == 'POST':
+        old_password = request.POST.get('old_password')
+        new_password1 = request.POST.get('new_password1')
+        new_password2 = request.POST.get('new_password2')
+        
+        if not request.user.check_password(old_password):
+            messages.error(request, "Incorrect old password!")
+            return redirect('profile')
+        
+        if new_password1 != new_password2:
+            messages.error(request, "Passwords didn't match!")
+            return redirect('profile')
+        
+        user = request.user
+        user.set_password(new_password1)
+        user.save()
+        
+        messages.success(request, "Password changed successfully!")
+        return redirect('profile')
+    
+    return render(request, 'changepassword.html')

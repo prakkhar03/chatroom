@@ -10,5 +10,7 @@ urlpatterns = [
     path("contact/", contact, name='contact'),
     path("logout/",  logoutfromchat, name='logout'),
     path("rooms/", rooms, name='rooms'),
-    path("<slug:slug>",room,name="room")
+    path("<slug:slug>",room,name="room"),
+    path("profile/", profile, name='profile'),
+    path("newpassword/", changepassword, name='newpassword'),
 ]
