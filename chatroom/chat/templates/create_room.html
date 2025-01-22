@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Room | {% endblock %}
+
+{% block content %}
+<div class="p-10 lg:p-20">
+    <div class="max-w-xl mx-auto">
+        <h1 class="text-3xl lg:text-5xl text-white mb-8">Create Chat Room</h1>
+
+        <div class="bg-gray-800 p-8 rounded-xl">
+            <form method="post" action="." class="space-y-6">
+                {% csrf_token %}
+                
+                <div>
+                    <label class="text-white block mb-2">Room Name</label>
+                    <input type="text" name="room_name" class="w-full px-4 py-2 rounded-xl" required>
+                </div>
+
+                <button class="w-full px-6 py-3 rounded-xl text-white bg-gray-700 hover:bg-gray-600 transition duration-300">Create Room</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

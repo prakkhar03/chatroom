@@ -1,9 +1,10 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login as auth_login,logout
 from .models import *
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.utils.text import slugify
 
 def frontpage(request):
     return render(request, 'frontpage.html')
@@ -56,10 +57,26 @@ def contact(request):
 def rooms(request):
     rooms = Room.objects.all().order_by('name')
     return render(request, 'rooms.html', {'rooms': rooms})
+
 @login_required
-def room(request,slug):
-    room = Room.objects.get(slug=slug)
+def create_room(request):
+    if request.method == 'POST':
+        room_name = request.POST.get('room_name', '').strip()
+        if room_name:
+            slug = slugify(room_name)
+            try:
+                room = Room.objects.create(name=room_name, slug=slug)
+                return redirect('room', slug=room.slug)
+            except:
+                messages.error(request, "Room name already exists!")
+                return redirect('create_room')
+    return render(request, 'create_room.html')
+
+@login_required
+def room(request, slug):
+    room = get_object_or_404(Room, slug=slug)
     return render(request, 'room.html', {'room': room})
+
 @login_required
 def profile(request):
     user = request.user
