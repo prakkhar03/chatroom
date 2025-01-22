@@ -5,17 +5,48 @@
 {% block content %}
 <div class="p-10 lg:p-20">
     <div class="max-w-4xl mx-auto">
-        <div class="bg-gray-800 p-6 rounded-xl">
-            <h1 class="text-3xl text-white mb-4">{{ room.name }}</h1>
-            <p class="text-gray-300 mb-4">Share this room: 
-                <button onclick="copyRoomLink('{{ request.scheme }}://{{ request.get_host }}{% url 'room' room.slug %}')" 
-                        class="px-4 py-2 rounded-xl text-white bg-gray-700 hover:bg-gray-600 transition duration-300">
-                    Copy Room Link
-                </button>
-            </p>
-            <div class="chat-messages bg-gray-700 p-4 rounded-xl min-h-[300px]">
-                <!-- Chat messages will go here -->
-                <p class="text-gray-300">Welcome to {{ room.name }}!</p>
+        <div class="bg-gray-800 rounded-xl">
+            <div class="p-6 border-b border-gray-700">
+                <div class="flex justify-between items-center">
+                    <h1 class="text-3xl text-white">{{ room.name }}</h1>
+                    <div class="flex space-x-4">
+                        <button onclick="copyRoomLink('{{ request.scheme }}://{{ request.get_host }}{% url 'room' room.slug %}')" 
+                                class="px-4 py-2 rounded-xl text-white bg-gray-700 hover:bg-gray-600 transition duration-300 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                            </svg>
+                            Share Room
+                        </button>
+                        <a href="{% url 'rooms' %}" class="px-4 py-2 rounded-xl text-white bg-gray-700 hover:bg-gray-600 transition duration-300">
+                            Back to Rooms
+                        </a>
+                    </div>
+                </div>
+                <p class="text-gray-400 mt-2">Room Link: <span class="text-gray-300">{{ request.scheme }}://{{ request.get_host }}{% url 'room' room.slug %}</span></p>
+            </div>
+
+            <div class="p-6">
+                <div class="chat-messages bg-gray-700 p-4 rounded-xl min-h-[400px] mb-4">
+                    <div class="text-center text-gray-400 mb-4">
+                        <p>Welcome to {{ room.name }}!</p>
+                        <p class="text-sm">Share this room's link with others to invite them to join.</p>
+                    </div>
+                    <div id="chat-messages" class="space-y-4">
+                        <!-- Messages will appear here -->
+                    </div>
+                </div>
+
+                <div class="mt-6">
+                    <form id="chat-form" class="flex space-x-4">
+                        <input type="text" id="chat-message-input" 
+                               class="flex-1 px-4 py-2 rounded-xl bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-gray-600"
+                               placeholder="Type your message...">
+                        <button type="submit" 
+                                class="px-6 py-2 rounded-xl text-white bg-gray-700 hover:bg-gray-600 transition duration-300">
+                            Send
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
@@ -24,10 +55,43 @@
 <script>
 function copyRoomLink(link) {
     navigator.clipboard.writeText(link).then(function() {
-        alert('Room link copied to clipboard!');
+    
+        const notification = document.createElement('div');
+        notification.textContent = 'Room link copied to clipboard!';
+        notification.className = 'fixed top-4 right-4 bg-gray-800 text-white px-6 py-3 rounded-xl shadow-lg';
+        document.body.appendChild(notification);
+        
+      
+        setTimeout(() => {
+            notification.remove();
+        }, 2000);
     }, function(err) {
         console.error('Could not copy text: ', err);
     });
 }
+
+
+const roomName = "{{ room_name }}";
+const roomSlug = "{{ room_slug }}";
+const username = "{{ username }}";
+
+document.querySelector('#chat-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const messageInput = document.querySelector('#chat-message-input');
+    const message = messageInput.value.trim();
+    
+    if (message) {
+        
+        const chatMessages = document.querySelector('#chat-messages');
+        const messageElement = document.createElement('div');
+        messageElement.className = 'p-3 bg-gray-600 rounded-xl';
+        messageElement.innerHTML = `<strong class="text-white">${username}:</strong> <span class="text-gray-300">${message}</span>`;
+        chatMessages.appendChild(messageElement);
+        
+        messageInput.value = '';
+        
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+});
 </script>
 {% endblock %}
