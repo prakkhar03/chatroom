@@ -75,13 +75,11 @@ def create_room(request):
 @login_required
 def room(request, slug):
     room = get_object_or_404(Room, slug=slug)
-    context = {
+    return render(request, 'room.html', {
         'room': room,
-        'room_name': room.name,
-        'room_slug': room.slug,
+        'room_slug': slug,
         'username': request.user.username
-    }
-    return render(request, 'room.html', context)
+    })
 
 @login_required
 def profile(request):
