@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ room.name }} | {% endblock %}
+{% block title %}{{ room.name }}{% endblock %}
 
 {% block content %}
 <div class="p-10 lg:p-20">
@@ -32,7 +32,12 @@
                         <p class="text-sm">Share this room's link with others to invite them to join.</p>
                     </div>
                     <div id="chat-messages" class="space-y-4 overflow-y-auto max-h-[400px]">
-                        
+                        {% for message in messages %}
+                        <div class="p-3 bg-gray-600 rounded-xl">
+                            <strong class="text-white">{{ message.user.username }}:</strong>
+                            <span class="text-gray-300">{{ message.content }}</span>
+                        </div>
+                        {% endfor %}
                     </div>
                 </div>
 
@@ -40,7 +45,8 @@
                     <form id="chat-form" class="flex space-x-4">
                         <input type="text" id="chat-message-input" 
                                class="flex-1 px-4 py-2 rounded-xl bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-gray-600"
-                               placeholder="Type your message...">
+                               placeholder="Type your message..."
+                               maxlength="1000">
                         <button type="submit" 
                                 class="px-6 py-2 rounded-xl text-white bg-gray-700 hover:bg-gray-600 transition duration-300">
                             Send
@@ -51,48 +57,57 @@
         </div>
     </div>
 </div>
+{% endblock %}
 
+{% block scripts %}
 <script>
 function copyRoomLink(link) {
     navigator.clipboard.writeText(link).then(function() {
         const notification = document.createElement('div');
         notification.textContent = 'Room link copied to clipboard!';
-        notification.className = 'fixed top-4 right-4 bg-gray-800 text-white px-6 py-3 rounded-xl shadow-lg';
+        notification.className = 'fixed top-4 right-4 bg-gray-800 text-white px-6 py-3 rounded-xl shadow-lg z-50';
         document.body.appendChild(notification);
         
         setTimeout(() => {
             notification.remove();
         }, 2000);
-    }, function(err) {
+    }).catch(function(err) {
         console.error('Could not copy text: ', err);
     });
 }
 
-const roomName = "{{ room_slug }}";
-const username = "{{ username }}";
+const roomName = "{{ room.slug }}";
+const username = "{{ request.user.username }}";
 
-
+// Set up WebSocket connection
+const wsScheme = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
 const chatSocket = new WebSocket(
-    'ws://' + window.location.host + '/ws/room/' + roomName + '/'
+    `${wsScheme}//${window.location.host}/ws/room/${roomName}/`
 );
 
+// Connection opened
+chatSocket.onopen = function(e) {
+    console.log('WebSocket connection established');
+};
 
+// Listen for messages
 chatSocket.onmessage = function(e) {
-    console.log('Message received:', e.data);  
+    console.log('Message received:', e.data);
     const data = JSON.parse(e.data);
     addMessage(data.username, data.message);
 };
 
+// Connection closed
 chatSocket.onclose = function(e) {
     console.error('Chat socket closed unexpectedly');
 };
 
-
+// Connection error
 chatSocket.onerror = function(e) {
     console.error('WebSocket error:', e);
 };
 
-
+// Add message to chat
 function addMessage(username, message) {
     const chatMessages = document.querySelector('#chat-messages');
     const messageElement = document.createElement('div');
@@ -104,20 +119,22 @@ function addMessage(username, message) {
     chatMessages.appendChild(messageElement);
     chatMessages.scrollTop = chatMessages.scrollHeight;
 }
-document.querySelector('#chat-form').addEventListener('submit', function(e) {
+
+// Handle form submission
+const chatForm = document.querySelector('#chat-form');
+const messageInput = document.querySelector('#chat-message-input');
+
+chatForm.addEventListener('submit', function(e) {
     e.preventDefault();
-    const messageInput = document.querySelector('#chat-message-input');
     const message = messageInput.value.trim();
     
-    if (message) {
-        console.log('Sending message:', message); 
+    if (message && chatSocket.readyState === WebSocket.OPEN) {
         chatSocket.send(JSON.stringify({
             'message': message,
             'username': username,
             'room': roomName
         }));
         
-        // Clear input
         messageInput.value = '';
     }
 });

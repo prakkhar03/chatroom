@@ -77,8 +77,6 @@ def room(request, slug):
     room = get_object_or_404(Room, slug=slug)
     return render(request, 'room.html', {
         'room': room,
-        'room_slug': slug,
-        'username': request.user.username
     })
 
 @login_required
