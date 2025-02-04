@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "chat",
     'channels',
 ]
+ASGI_APPLICATION = 'chatroom.asgi.application'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -77,7 +78,7 @@ CHANNEL_LAYERS = {
     }
 }
 
-ASGI_APPLICATION = 'chatroom.asgi.application'
+
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
